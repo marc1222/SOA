@@ -1,0 +1,1 @@
+ENTRY(write_wrapper) 
