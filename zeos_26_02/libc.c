@@ -43,3 +43,53 @@ int strlen(char *a)
   return i;
 }
 
+
+void perror()
+{
+  char buffer[256];
+
+  itoa(errno, buffer);
+
+  write(1, buffer, strlen(buffer));
+}
+
+
+int write(int fd, char *buffer, int size){
+
+	int n;
+	__asm__ __volatile__(
+	"int 0x80\n\t"
+	: "=a" (n) ); /*output*/
+	: "a" (4), "b" (fd), "c" (buffer), "d" (size) /*input*/
+	: /*no clobbered registers */
+	);
+	if(n < 0){
+		errno = -n;
+		return -1;
+	}
+	else {
+		errno = 0;
+		return n;
+	}
+	
+	
+}
+
+
+void gettime(){
+	int n;
+	__asm__ __volatile__(
+	"int 0x80\n\t"
+	: "=a" (n) ); /*output*/
+	: "a" (10)/*input*/
+	: /*no clobbered registers */
+	);
+	if(n < 0){
+		errno = -n;
+		return -1;
+	}
+	else {
+		errno = 0;
+		return n;
+	}
+}

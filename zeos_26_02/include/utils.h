@@ -4,6 +4,8 @@
 void copy_data(void *start, void *dest, int size);
 int copy_from_user(void *start, void *dest, int size);
 int copy_to_user(void *start, void *dest, int size);
+void zeos_increase_ticks();
+int zeos_get_ticks();
 
 #define VERIFY_READ	0
 #define VERIFY_WRITE	1

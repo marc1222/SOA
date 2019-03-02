@@ -130,3 +130,10 @@ unsigned long get_ticks(void) {
 
         return ticks;
 }
+
+void zeos_increase_ticks(){
+	++zeos_ticks;
+}
+int zeos_get_ticks(){
+	return zeos_ticks;
+}

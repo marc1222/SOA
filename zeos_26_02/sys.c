@@ -45,3 +45,27 @@ int sys_fork()
 void sys_exit()
 {  
 }
+
+
+int sys_write(int fd, char * buffer, int size){
+	int r = check_fd(fd, ESCRIPTURA);
+	if(r < 0) return r;
+	if (buffer == NULL || size <= 0) return -EINVAL; 
+
+	char bufferTwo[size];
+	r = copy_from_user(void *start, void *dest, int size);
+	if(r < 0) return r;
+	r = sys_write_console (bufferTwo,size);
+	return r;
+
+
+}
+
+
+int sys_gettime(){
+	return zeos_get_ticks();
+
+
+}
+
+
