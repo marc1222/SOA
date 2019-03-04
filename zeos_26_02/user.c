@@ -11,5 +11,7 @@ int __attribute__ ((__section__(".text.main")))
      /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
 
     
-  while(1) { }
+	while(1) {
+		write(1,"\n",1); 
+	}
 }

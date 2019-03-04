@@ -7,7 +7,7 @@
 #include <segment.h>
 #include <hardware.h>
 #include <io.h>
-
+#include <entry.h>
 #include <zeos_interrupt.h>
 
 Gate idt[IDT_ENTRIES];
@@ -111,6 +111,11 @@ void setIdt()
   setInterruptHandler(32, clock_handler, 0);
   setTrapHandler(0x80, system_call_handler, 3);
 
+}
+void setMSR() {
+	writeMSR(0x174,__KERNEL_CS);
+	writeMSR(0x175,INITIAL_ESP);
+	writeMSR(0x176,(int)syscall_handler_sysenter);
 }
 
 

@@ -7,8 +7,7 @@
 
 
 
-
-
+void syscall_handler_sysenter();
 
 
 
