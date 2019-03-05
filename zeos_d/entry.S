@@ -74,8 +74,14 @@ ENTRY(keyboard_handler)
 	EOI
 	call keyboard_routine
 	RESTORE_ALL
-	iret;
+	iret
 
+ENTRY(clock_handler) 
+	SAVE_ALL
+	EOI
+	call clock_routine
+	RESTORE_ALL
+	iret
 
 ENTRY(writeMSR)
 	pushl %ebp
@@ -92,9 +98,6 @@ ENTRY(writeMSR)
 	movl %ebp, %esp
 	popl %ebp
 	ret
-	
-
-
 
 ENTRY(syscall_handler_sysenter)
 	push $__USER_DS

@@ -14,8 +14,13 @@ int __attribute__ ((__section__(".text.main")))
     	int ret = write(1,"Write working\n",20);
 	char *buff = "";
 	itoa(ret,buff);
-	write(1,buff,2);
-	//write(1,"\n",1);
-	//write(1,"\n",1);
-  while(1) { }
+	write(1,buff,strlen(buff));
+	write(1,"\n",1);
+	//ret = gettime();
+	//*buff = "";
+	//itoa(ret,buff);
+	//write(1,buff,strlen(buff));
+
+
+	while(1);
 }

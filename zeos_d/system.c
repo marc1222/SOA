@@ -60,7 +60,6 @@ inline void set_seg_regs(Word data_sel, Word stack_sel, DWord esp)
 int __attribute__((__section__(".text.main")))
   main(void)
 {
-
   set_eflags();
 
   /* Define the kernel segment registers  and a stack to execute the 'main' code */
@@ -73,7 +72,7 @@ int __attribute__((__section__(".text.main")))
   /*** DO *NOT* ADD ANY CODE IN THIS ROUTINE BEFORE THIS POINT ***/
 
   printk("Kernel Loaded!    ");
-
+  zeos_ticks = 0;
 
   /* Initialize hardware data */
   setGdt(); /* Definicio de la taula de segments de memoria */
@@ -108,7 +107,7 @@ int __attribute__((__section__(".text.main")))
    * and going to execute 'magically' at 'usr_main'...
    */
   return_gate(__USER_DS, __USER_DS, USER_ESP, __USER_CS, L_USER_START);
-
+  
   /* The execution never arrives to this point */
   return 0;
 }

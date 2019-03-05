@@ -49,3 +49,35 @@ write_end:
  movl %ebp, %esp
  popl %ebp
  ret
+
+
+
+.globl gettime; .type gettime, @function; .align 0; gettime:
+ pushl %ebp
+ movl %esp, %ebp
+
+ pushl %edx
+ pushl %ecx
+ pushl %esi
+
+ movl $10, %eax
+
+ leal gettime_ret, %esi
+ pushl %esi
+
+ pushl %ebp
+ movl %esp, %ebp
+
+ sysenter
+
+gettime_ret:
+
+ popl %ebp
+
+ popl %esi
+ popl %ecx
+ popl %edx
+
+ movl %ebp, %esp
+ popl %ebp
+ ret

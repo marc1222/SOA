@@ -7,6 +7,7 @@
 #include <segment.h>
 #include <hardware.h>
 #include <io.h>
+#include <system.h>
 
 #include <zeos_interrupt.h>
 
@@ -75,9 +76,29 @@ void setTrapHandler(int vector, void (*handler)(), int maxAccessibleFromPL)
   idt[vector].highOffset      = highWord((DWord)handler);
 }
 
+void setIdt()
+{
+  /* Program interrups/exception service routines */
+  idtR.base  = (DWord)idt;
+  idtR.limit = IDT_ENTRIES * sizeof(Gate) - 1;
+  
+  set_handlers();
 
+  /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
+  setInterruptHandler(33, keyboard_handler, 0);
+  setInterruptHandler(32, clock_handler, 0);
+  set_idt_reg(&idtR);
 
-void keyboard_routine () {
+  //setTrapHandler(0x80, syscall_handler_sysenter, 3);
+}
+
+void setMSR() {
+	writeMSR(0x174,__KERNEL_CS);
+	writeMSR(0x175,INITIAL_ESP);
+	writeMSR(0x176,(int)syscall_handler_sysenter);
+}
+
+void keyboard_routine() {
 	ch = inb (0x60);
 	if(ch & 0x80) {//break
 		
@@ -90,28 +111,11 @@ void keyboard_routine () {
 	}
 }
 
-
-void setIdt()
-{
-  /* Program interrups/exception service routines */
-  idtR.base  = (DWord)idt;
-  idtR.limit = IDT_ENTRIES * sizeof(Gate) - 1;
-  
-  set_handlers();
-
-  /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
-
-  set_idt_reg(&idtR);
-  setInterruptHandler(33, keyboard_handler, 0);
-  setInterruptHandler(32, keyboard_handler, 0);
-  setTrapHandler(0x80, syscall_handler_sysenter, 3);
+void clock_routine() {
+	zeos_ticks++;
+	zeos_show_clock();
 }
 
-void setMSR() {
-	writeMSR(0x174,__KERNEL_CS);
-	writeMSR(0x175,INITIAL_ESP);
-	writeMSR(0x176,(int)syscall_handler_sysenter);
-}
 
 
 

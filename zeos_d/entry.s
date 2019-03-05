@@ -23,8 +23,14 @@
  movb $0x20,%al; outb %al, $0x20;
  call keyboard_routine
  popl %ebx; popl %ecx; popl %edx; popl %esi; popl %edi; popl %ebp; popl %eax; popl %ds; popl %es; popl %fs; popl %gs;
- iret;
+ iret
 
+.globl clock_handler; .type clock_handler, @function; .align 0; clock_handler:
+ pushl %gs; pushl %fs; pushl %es; pushl %ds; pushl %eax; pushl %ebp; pushl %edi; pushl %esi; pushl %edx; pushl %ecx; pushl %ebx; movl $0x18, %edx; movl %edx, %ds; movl %edx, %es
+ movb $0x20,%al; outb %al, $0x20;
+ call clock_routine
+ popl %ebx; popl %ecx; popl %edx; popl %esi; popl %edi; popl %ebp; popl %eax; popl %ds; popl %es; popl %fs; popl %gs;
+ iret
 
 .globl writeMSR; .type writeMSR, @function; .align 0; writeMSR:
  pushl %ebp
@@ -41,9 +47,6 @@
  movl %ebp, %esp
  popl %ebp
  ret
-
-
-
 
 .globl syscall_handler_sysenter; .type syscall_handler_sysenter, @function; .align 0; syscall_handler_sysenter:
  push $0x2B
