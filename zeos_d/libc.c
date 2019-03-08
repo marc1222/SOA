@@ -27,7 +27,7 @@ void itoa(int a, char *b)
     b[i1]=b[i-i1-1];
     b[i-i1-1]=c;
   }
-  b[i]=0;
+  b[i] = 0;
 }
 
 int strlen(char *a)

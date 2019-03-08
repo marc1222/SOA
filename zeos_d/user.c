@@ -11,16 +11,12 @@ int __attribute__ ((__section__(".text.main")))
      /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
 
     
-    	int ret = write(1,"Write working\n",20);
-	char *buff = "";
-	itoa(ret,buff);
-	write(1,buff,strlen(buff));
-	write(1,"\n",1);
-	//ret = gettime();
-	//*buff = "";
+   // 	int ret = write(1,"Write working\n",14);
+	//char *buff = "";
 	//itoa(ret,buff);
-	//write(1,buff,strlen(buff));
 
-
+	runjp();
+	
+	
 	while(1);
 }

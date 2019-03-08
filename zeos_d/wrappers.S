@@ -6,8 +6,8 @@ ENTRY(write)
 
 	pushl %edx
 	pushl %ecx
-	pushl %esi
 	pushl %ebx
+	pushl %esi
 
 	movl $4, %eax
 	movl 8(%ebp), %ebx
@@ -30,11 +30,14 @@ write_ret:
 	jge write_end
 	neg %eax
 	movl %eax, errno
+	movl $-1, %eax
+
 	
 write_end:
-
-	popl %ebx
 	popl %esi
+
+	popl %esi
+	popl %ebx
 	popl %ecx
 	popl %edx
 
@@ -65,6 +68,8 @@ ENTRY(gettime)
 gettime_ret:
 
 	popl %ebp
+
+	popl %esi
 
 	popl %esi
 	popl %ecx

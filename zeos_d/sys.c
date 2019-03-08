@@ -60,7 +60,9 @@ int sys_fork()
 void sys_exit()
 {  
 }
+#define MAX_BUFFER_SIZE 256
 int sys_write( int fd, char* buff, int size ) {
+	char buff_aux[MAX_BUFFER_SIZE];
 	int res = check_fd(fd,ESCRIPTURA);
 	if (res != 0) 
 		return res;
@@ -69,9 +71,22 @@ int sys_write( int fd, char* buff, int size ) {
 	if (size < 0)
 		return -EINVAL;
 
-	if (strlen(buff) < size) size = strlen(buff);
+	//if (strlen(buff) < size) size = strlen(buff);
+	int left = size; 
+	while (left > MAX_BUFFER_SIZE) {
+		copy_from_user(buff, buff_aux, MAX_BUFFER_SIZE);
+		res = sys_write_console(buff_aux, MAX_BUFFER_SIZE);
+		left -= res;
+		buff += res;
 
-	return sys_write_console(buff,size);
+	}
+	if (left > 0) {
+		copy_from_user(buff, buff_aux,left);
+		res = sys_write_console(buff_aux, left);
+		left -= res;
+	}
+	return (size-left);
+	
 }
 int sys_gettime()
 {
