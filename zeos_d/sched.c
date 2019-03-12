@@ -56,6 +56,11 @@ void cpu_idle(void)
 void init_idle (void)
 {
 
+	idle_task = list_head_to_task_struct(freequeue->prev);
+	list_del(freequeue->prev);
+	idle_task.PID = 0;	
+	allocate_DIR(idle_task);
+
 }
 
 void init_task1(void)
@@ -64,6 +69,17 @@ void init_task1(void)
 
 
 void init_sched(){
+
+	INIT_LIST_HEAD(&freequeue);
+	int i;
+//orden 0-1-2-3-....n-freequeue (la cola cuelga de freequeue->prev)
+	for(i = 0; i < NR_TASKS; i++) {
+		list_add_tail(&task[i]->p_task->list, &freequeue);
+	}
+
+	INIT_LIST_HEAD(&readyqueue); //vacia
+
+	
 
 }
 
