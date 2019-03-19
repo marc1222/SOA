@@ -15,7 +15,7 @@ int __attribute__ ((__section__(".text.main")))
 	//char *buff = "";
 	//itoa(ret,buff);
 
-	runjp();
+	//runjp();
 	
 	
 	while(1);

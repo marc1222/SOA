@@ -20,6 +20,7 @@ struct task_struct {
 
 	/*new*/
 	struct list_head list;
+	long* kernel_esp;
 };
 
 union task_union { //NAMED TASK
@@ -28,8 +29,8 @@ union task_union { //NAMED TASK
 };
 
 extern union task_union task[NR_TASKS]; /* Vector de tasques */
-extern struct list_head freequeue;
-extern struct list_head readyqueue;
+extern struct list_head *freequeue;
+extern struct list_head *readyqueue;
 
 extern struct task_struct *idle_task;
 
