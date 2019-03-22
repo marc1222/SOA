@@ -14,6 +14,10 @@ int __attribute__ ((__section__(".text.main")))
    // 	int ret = write(1,"Write working\n",14);
 	//char *buff = "";
 	//itoa(ret,buff);
+	char *buff;
+	//gettime();
+	//itoa((int)gettime(),buff);
+	write(1,"ghjk",4);
 
 	//runjp();
 	

@@ -29,8 +29,8 @@ union task_union { //NAMED TASK
 };
 
 extern union task_union task[NR_TASKS]; /* Vector de tasques */
-extern struct list_head *freequeue;
-extern struct list_head *readyqueue;
+extern struct list_head freequeue;
+extern struct list_head readyqueue;
 
 extern struct task_struct *idle_task;
 
@@ -64,5 +64,8 @@ void sched_next_rr();
 void update_process_state_rr(struct task_struct *t, struct list_head *dest);
 int needs_sched_rr();
 void update_sched_data_rr();
+
+void init_rdyq();
+void init_fq();
 
 #endif  /* __SCHED_H__ */

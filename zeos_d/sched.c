@@ -6,13 +6,21 @@
 #include <mm.h>
 #include <io.h>
 
+
+
+
+struct list_head freequeue;
+struct list_head readyqueue;
+
+struct task_struct * idle_task;
+
 union task_union task[NR_TASKS]
   __attribute__((__section__(".data.task")));
 
 
 struct task_struct *list_head_to_task_struct(struct list_head *l)
 {
-  return (struct task_struct *)(l & (struct list_head *)0xfffff000);
+  return (struct task_struct *)((unsigned int)l&0xfffff000);
 }
 
 
@@ -51,49 +59,58 @@ void cpu_idle(void)
 }
 
 void init_idle (void)
-{
+{	
+	struct list_head *idle_lh = list_first(&freequeue);
+	list_del(idle_lh);
+	struct task_struct *idle_ts = list_head_to_task_struct(idle_lh);
+	
+	union task_union *idle_tu = (union task_union*) idle_ts; 
 
-	idle_task = list_head_to_task_struct(freequeue->prev);
-	list_del(freequeue->prev);
-	idle_task->PID = 0;
-	allocate_DIR(idle_task);
-	//new
-	idle_task->kernel_esp = (int *)(&idle_task[KERNEL_STACK_SIZE-2]);
-	int *aux = (int *)idle_task;
-	aux[KERNEL_STACK_SIZE-1] = cpu_idle;
-	aux[KERNEL_STACK_SIZE-2] = 0;
+	idle_ts->PID = 0;
+	allocate_DIR(idle_ts);
+
+
+	idle_tu->stack[KERNEL_STACK_SIZE-2] = 0;
+	idle_tu->stack[KERNEL_STACK_SIZE-1] = (unsigned long)&cpu_idle;
+	idle_tu->p_task.kernel_esp = (unsigned long)&idle_tu->stack[KERNEL_STACK_SIZE-2];
+
+	idle_task = idle_ts;
 }
 
 void init_task1(void)
 {
-	struct task_struct * init = list_head_to_task_struct(freequeue->prev);
-	list_del(freequeue->prev);
-	init->PID = 1;
-	allocate_DIR(init);
+	struct list_head *init_lh = list_first(&freequeue);
+	list_del(init_lh);
+	struct task_struct *init_ts = list_head_to_task_struct(init_lh);	
+	init_ts->PID = 1;
 
-	set_user_pages(init);
+	allocate_DIR(init_ts);
+	set_user_pages(init_ts);
 
-        tss.esp0 = (DWord)init;
-	writeMSR(0x175,(DWord)init);
+	union task_union *init_tu = (union task_union *)init_ts;
+ 	tss.esp0 = &init_tu->stack[KERNEL_STACK_SIZE];
+	writeMSR(0x175,tss.esp0);
 
-	set_cr3(init->dir_pages_baseAddr);	
+	set_cr3(init_ts->dir_pages_baseAddr);	
 }
 
 
 void init_sched(){
+	init_fq();
+	init_rdyq();
+}
 
-	INIT_LIST_HEAD(freequeue);
-	int i;
+void init_fq() {
 //orden 0->1->2->3->....->n-freequeue (la cola cuelga de freequeue->prev)
 //EL PREV DE FREEQUEUE APUNTA A N, FREEQUEUE NEXT APUNTA A SI MISMO
+	INIT_LIST_HEAD(&freequeue);
+	int i;
 	for(i = 0; i < NR_TASKS; i++) {
-		list_add_tail(&(task[i]->p_task->list), freequeue);
+		list_add_tail(&task[i].p_task.list,&freequeue);
 	}
-
-	INIT_LIST_HEAD(readyqueue); //vacia
-
-	
-
+}
+void init_rdyq() {
+	INIT_LIST_HEAD(&readyqueue); //vacia
 }
 
 struct task_struct* current()
