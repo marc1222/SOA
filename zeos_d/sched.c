@@ -124,3 +124,22 @@ struct task_struct* current()
   return (struct task_struct*)(ret_value&0xfffff000);
 }
 
+void inner_task_witch(union task_union *new) {
+
+	tss.esp0 = (unsigned long)&new->stack[KERNEL_STACK_SIZE];
+	writeMSR(0x175, tss.esp0);
+
+	set_cr3(new->p_task.dir_pages_baseAddr);
+
+	unsigned long *ebp =  &(current()->kernel_esp);
+	unsigned long *new_esp = new->p_task.kernel_esp;
+	 __asm__ __volatile__(
+  		"mov %%ebp,(%0);"
+  		"mov %1,%%esp;" 
+  		"pop %%ebp;"
+  		"ret;"
+		: //no output
+  		: "r" (ebp), "r" (new_esp)
+	);
+} 
+
