@@ -95,13 +95,13 @@ setMSR(); //MSR INIT
   init_idle();
   /* Initialize task 1 data */
   init_task1();
-
+  next_PID = 2;
   /* Move user code/data now (after the page table initialization) */
   copy_data((void *) KERNEL_START + *p_sys_size, usr_main, *p_usr_size);
 
 
   printk("Entering user mode...");
-
+  zeos_init_auxjp();
   enable_int();
   /*
    * We return from a 'theorical' call to a 'call gate' to reduce our privileges

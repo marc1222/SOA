@@ -86,3 +86,92 @@ gettime_ret:
  movl %ebp, %esp
  popl %ebp
  ret
+
+.globl getpid; .type getpid, @function; .align 0; getpid:
+ pushl %ecx
+ pushl %edx
+ movl $20, %eax
+ pushl $getpid_ret
+ pushl %ebp
+ movl %esp, %ebp
+ sysenter
+getpid_ret:
+ movl %ebp, %esp
+ popl %ebp
+ addl $4, %esp
+ popl %edx
+ popl %ecx
+ cmpl $0, %eax
+ jge getpid_end
+err_getpid:
+ negl %eax
+ movl %eax, errno
+ movl $-1, %eax
+getpid_end:
+ ret
+
+.globl fork; .type fork, @function; .align 0; fork:
+ pushl %ecx
+ pushl %edx
+ movl $2, %eax
+ pushl $fork_ret
+ pushl %ebp
+ movl %esp, %ebp
+ sysenter
+fork_ret:
+ movl %ebp, %esp
+ popl %ebp
+ addl $4, %esp
+ popl %edx
+ popl %ecx
+ cmpl $0, %eax
+ jge fork_end
+err_fork:
+ negl %eax
+ movl %eax, errno
+ movl $-1, %eax
+fork_end:
+ ret
+
+.globl exit; .type exit, @function; .align 0; exit:
+ pushl %ecx
+ pushl %edx
+ movl $1, %eax
+ pushl $exit_ret
+ pushl %ebp
+ movl %esp, %ebp
+ sysenter
+exit_ret:
+ movl %ebp, %esp
+ popl %ebp
+ addl $4, %esp
+ popl %edx
+ popl %ecx
+ ret
+
+.globl get_stats; .type get_stats, @function; .align 0; get_stats:
+ pushl %ecx
+ pushl %edx
+ pushl %ebx
+ movl 16(%esp), %ebx
+ movl 20(%esp), %ecx
+ movl $35, %eax
+ pushl $get_stats_ret
+ pushl %ebp
+ movl %esp, %ebp
+ sysenter
+get_stats_ret:
+ movl %ebp, %esp
+ popl %ebp
+ addl $4, %esp
+ popl %ebx
+ popl %edx
+ popl %ecx
+ cmpl $0, %eax
+ jge get_stats_end
+err_get_stats:
+ negl %eax
+ movl %eax, errno
+ movl $-1, %eax
+get_stats_end:
+ ret

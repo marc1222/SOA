@@ -11,5 +11,5 @@
 extern TSS         tss;
 extern Descriptor* gdt;
 int zeos_ticks;
-
+int next_PID;
 #endif  /* __SYSTEM_H__ */

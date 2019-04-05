@@ -8,11 +8,12 @@
 #include <list.h>
 #include <types.h>
 #include <mm_address.h>
+#include <stats.h>
 
 #define NR_TASKS      10
 #define KERNEL_STACK_SIZE	1024
-
-enum state_t { ST_RUN, ST_READY, ST_BLOCKED };
+int ticks_left;
+enum state_t { ST_RUN, ST_READY, ST_BLOCKED, ST_FREE };
 
 struct task_struct {
   int PID;			/* Process ID. This MUST be the first field of the struct. */
@@ -20,7 +21,11 @@ struct task_struct {
 
 	/*new*/
 	struct list_head list;
-	long* kernel_esp;
+	unsigned long *kernel_esp;
+ 	int quantum;
+	enum state_t estat;
+	struct stats stat;
+
 };
 
 union task_union { //NAMED TASK

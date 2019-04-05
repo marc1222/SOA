@@ -10,17 +10,13 @@ int __attribute__ ((__section__(".text.main")))
     /* Next line, tries to move value 0 to CR3 register. This register is a privileged one, and so it will raise an exception */
      /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
 
-    
-   // 	int ret = write(1,"Write working\n",14);
-	//char *buff = "";
-	//itoa(ret,buff);
-	char buff[20];
-	//gettime();
+	//char buff[20];
+	//int gettime();
 	//itoa((int)gettime(),buff);
-	write(1,"ghjk",4);
-
-	//runjp();
+	//write(1,buff,strlen(buff));
 	
-	
-	while(1);
+	runjp();
+	while(1) {
+		
+	}
 }

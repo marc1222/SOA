@@ -105,10 +105,14 @@ void keyboard_routine() {
 		else printc_xy(0,0,'C');
 	
 	}
+	update_stats_b();
 }
 
 void clock_routine() {
+	update_stats_a();
 	zeos_ticks++;
 	zeos_show_clock();
+	schedule();
+	update_stats_b();
 }
 

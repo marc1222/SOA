@@ -28,10 +28,10 @@ LINKFLAGS = -g
 
 SYSOBJ = interrupt.o entry.o sys_call_table.o io.o sched.o sys.o mm.o devices.o utils.o hardware.o list.o switch.o
 
-LIBZEOS = -L . -l zeos
+LIBZEOS = -L . -l zeos -l auxjp
 
 #add to USROBJ the object files required to complete the user program
-USROBJ = libc.o wrappers.o # libjp.a
+USROBJ = libc.o wrappers.o libjp.a
 
 all:zeos.bin
 
@@ -66,8 +66,6 @@ wrappers.o: wrappers.s
 
 switch.s: switch.S $(INCLUDEDIR)/asm.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
-
-switch.o:  switch.s
 
 user.o:user.c $(INCLUDEDIR)/libc.h
 
