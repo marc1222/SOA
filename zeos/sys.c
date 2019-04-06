@@ -53,7 +53,7 @@ int sys_getpid()
 }
 
 int ret_from_fork() {
-  update_stats_a();
+  //update_stats_a();
   update_stats_b();
   return 0;
 }
@@ -133,8 +133,11 @@ void sys_exit()
   
   current()->estat = ST_FREE;
 
-  free_user_pages(current());
-
+  //free_user_pages(current());
+	for (int pag=0; pag<NUM_PAG_DATA; pag++)	{
+			free_frame(get_frame(get_PT(current()),PAG_LOG_INIT_DATA+pag));
+			del_ss_pag(get_PT(current()),PAG_LOG_INIT_DATA+pag);
+	}
   list_add_tail(&current()->list, &freequeue);
   sched_next_rr();
 }

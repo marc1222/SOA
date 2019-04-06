@@ -6,12 +6,19 @@
 #include <segment.h>
 #include <hardware.h>
 #include <io.h>
+
 #include <system.h>
+
+
 #include <zeos_interrupt.h>
-#include <libc.h>
 
 Gate idt[IDT_ENTRIES];
 Register    idtR;
+
+void clock_handler();
+void keyboard_handler();
+void system_call_handler();
+
 
 char char_map[] =
 {
@@ -82,50 +89,47 @@ void setIdt()
   idtR.limit = IDT_ENTRIES * sizeof(Gate) - 1;
   
   set_handlers();
-/* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
-  setInterruptHandler(33, keyboard_handler, 0);
-  setInterruptHandler(32, clock_handler, 0);
 
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
+  setInterruptHandler(33, keyboard_handler, 0);
+  setInterruptHandler(32, clock_handler, 0);
+  setTrapHandler(0x80, system_call_handler, 3);
+
 
   set_idt_reg(&idtR);
 }
-void setMSR() {
-	writeMSR(0x174,__KERNEL_CS);
-	writeMSR(0x175,INITIAL_ESP);
-	writeMSR(0x176,(int)syscall_handler_sysenter);
-}
-void keyboard_routine() {
-	char ch = inb (0x60);
-	if(ch & 0x80) {//break
-		
-	}
-	else {
-		char aux = char_map[ch & 0x7F];
-		if(aux != '\0') printc_xy(0, 0, aux);		
-		else printc_xy(0,0,'C');
-		if (aux == 's') {
-			for (int i = 0; i < NR_TASKS; ++i) {
-				int ret = task[i].task.PID;
-				char buff[2];
-				itoa(ret,buff);
-				printk(buff);
-				printk(".......");
-			}
-		}
-		//if (aux == '0') task_switch(&task[0]);
-		//if (aux == '1') task_switch(&task[1]);
-		
-	
-	}
-	update_stats_b();
+
+void keyboard_routine()
+{
+  update_stats_a();
+  unsigned char c;
+
+  c = inb(0x60);
+  if (!(c & 0b10000000)) {
+    c = char_map[c];
+    if (c == '\0') {
+      c = 'C';
+    }
+    //if (c == '0')
+      //task_switch(&task[0]);
+    //else if (c == '1')
+      //task_switch(&task[1]);
+    //else if (c == '2')
+      //task_switch(&task[2]);
+    printc_xy(79, 24, c);
+  }
+  update_stats_b();
 }
 
-void clock_routine() {
-	update_stats_a();
-	zeos_ticks++;
-	zeos_show_clock();
-	schedule();
-	update_stats_b();
+
+void clock_routine()
+{
+  update_stats_a();
+  ++zeos_ticks;
+  zeos_show_clock();
+  //update_stats_b(); // OjO
+  schedule();
+  update_stats_b(); // afecta als user->system->user i tambe als ready->system->user
 }
+
 

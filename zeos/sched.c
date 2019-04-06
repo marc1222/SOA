@@ -5,12 +5,13 @@
 #include <sched.h>
 #include <mm.h>
 #include <io.h>
-
+#include <utils.h>
 
 
 
 struct list_head freequeue;
 struct list_head readyqueue;
+
 
 struct task_struct * idle_task;
 
@@ -61,8 +62,8 @@ void cpu_idle(void)
 void init_idle (void)
 {	
 	//struct list_head *idle_lh = list_first(&freequeue);
-		struct task_struct *idle_ts = list_head_to_task_struct(freequeue.next);	
-list_del(freequeue.next);
+	struct task_struct *idle_ts = list_head_to_task_struct(freequeue.next);	
+	list_del(freequeue.next);
 	
 	union task_union *idle_tu = (union task_union*) idle_ts; 
 
@@ -99,7 +100,7 @@ list_del(init_lh);
  	tss.esp0 = &(init_tu->stack[KERNEL_STACK_SIZE]);
 	writeMSR(0x175,&(init_tu->stack[KERNEL_STACK_SIZE]));
 	//set_cr3(get_DIR(init_ts));
-	set_cr3(init_ts->dir_pages_baseAddr);	
+	set_cr3(get_DIR(init_ts));	
 }
 
 
@@ -140,8 +141,10 @@ void inner_task_switch(union task_union *new) {
 	writeMSR(0x175, tss.esp0);
 
 	if (current()->dir_pages_baseAddr != new->task.dir_pages_baseAddr) {
+	//printk("otro...");
 	set_cr3(new->task.dir_pages_baseAddr);
 	}
+	//else printk("mismo...");
  	current()->kernel_esp = get_ebp();
 	set_esp(new->task.kernel_esp);
 } 
@@ -163,22 +166,26 @@ void update_process_state_rr (struct task_struct *t, struct list_head *dst_queue
   }
 }
 void sched_next_rr() {
-  union task_union *nextptr;
+  union task_union *next;
 //si la cola de rdy esta vacia, metemos idle
   if (list_empty(&readyqueue)) {
-    nextptr = (union task_union *) idle_task;
+    next = (union task_union *) idle_task;
     ticks_left = 0;
     idle_task->estat = ST_RUN;
     task_switch((union task_union*)idle_task);
   } else { //hay algun proceso en cola de rdy
-    nextptr = (union task_union *) list_head_to_task_struct(readyqueue.next);
+    next = (union task_union *) list_head_to_task_struct(readyqueue.next);
     list_del(readyqueue.next);
-    ticks_left = nextptr->task.quantum;
-    nextptr->task.stat.remaining_ticks = ticks_left;
-    update_stats_d(&nextptr->task);
+    ticks_left = next->task.quantum;
+    next->task.stat.remaining_ticks = ticks_left;
+    update_stats_d(&next->task);
+	//int i = next->task.PID;
+	//char c;
+	//itoa(i,&c);
+	//printk(&c);
   }
-  nextptr->task.estat = ST_RUN;
-  task_switch(nextptr);
+  next->task.estat = ST_RUN;
+  task_switch(next);
   
 }
 

@@ -68,17 +68,16 @@ int __attribute__((__section__(".text.main")))
   // compiler will know its final memory location. Otherwise it will try to use the
   // 'ds' register to access the address... but we are not ready for that yet
   // (we are still in real mode).
-  set_seg_regs(__KERNEL_DS, __KERNEL_DS, (DWord) &task[4]);
+  set_seg_regs(__KERNEL_DS, __KERNEL_DS, (DWord) &protected_tasks[5]);
 
   /*** DO *NOT* ADD ANY CODE IN THIS ROUTINE BEFORE THIS POINT ***/
 
   printk("Kernel Loaded!    ");
-  zeos_ticks = 0;
+
 
   /* Initialize hardware data */
   setGdt(); /* Definicio de la taula de segments de memoria */
   setIdt(); /* Definicio del vector de interrupcions */
-setMSR(); //MSR INIT
   setTSS(); /* Definicio de la TSS */
 
   /* Initialize Memory */
@@ -86,7 +85,7 @@ setMSR(); //MSR INIT
 
 /* Initialize an address space to be used for the monoprocess version of ZeOS */
 
-//  monoprocess_init_addr_space(); /* TO BE DELETED WHEN ADDED THE PROCESS MANAGEMENT CODE TO BECOME MULTIPROCESS */
+  //monoprocess_init_addr_space(); /* TO BE DELETED WHEN ADDED THE PROCESS MANAGEMENT CODE TO BECOME MULTIPROCESS */
 
   /* Initialize Scheduling */
   init_sched();
@@ -95,13 +94,13 @@ setMSR(); //MSR INIT
   init_idle();
   /* Initialize task 1 data */
   init_task1();
-  next_PID = 2;
+
   /* Move user code/data now (after the page table initialization) */
   copy_data((void *) KERNEL_START + *p_sys_size, usr_main, *p_usr_size);
 
 
   printk("Entering user mode...");
- zeos_init_auxjp();
+
   enable_int();
   /*
    * We return from a 'theorical' call to a 'call gate' to reduce our privileges
@@ -112,3 +111,5 @@ setMSR(); //MSR INIT
   /* The execution never arrives to this point */
   return 0;
 }
+
+
