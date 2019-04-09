@@ -101,7 +101,7 @@ setMSR(); //MSR INIT
 
 
   printk("Entering user mode...");
- zeos_init_auxjp();
+ //zeos_init_auxjp();
   enable_int();
   /*
    * We return from a 'theorical' call to a 'call gate' to reduce our privileges

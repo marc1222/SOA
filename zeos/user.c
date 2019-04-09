@@ -15,7 +15,7 @@ int __attribute__ ((__section__(".text.main")))
 	//itoa((int)gettime(),buff);
 	//write(1,buff,strlen(buff));
 	
-	runjp();
+	//runjp();
 	//fork();
 //	write(1,"hooala",7);
 //int i = 0;

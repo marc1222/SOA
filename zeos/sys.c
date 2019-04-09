@@ -87,18 +87,18 @@ int sys_fork()
   }
 //emepzamos a hacer el alloc frame de las paginas
 //si hay error, liberamos todos los frames reservados hasta el error (marxa enerere)
-  for (pag = PAG_LOG_INIT_DATA; pag < NUM_PAG_DATA+PAG_LOG_INIT_DATA; ++pag) {
-    fr[pag-PAG_LOG_INIT_DATA] = alloc_frame();
-      if (fr[pag-PAG_LOG_INIT_DATA] == -1) {
+  for (pag = 0; pag < NUM_PAG_DATA; ++pag) {
+    fr[pag] = alloc_frame();
+      if (fr[pag] == -1) {
 	update_stats_b();
-        for (pag = pag - 1; pag >= PAG_LOG_INIT_DATA; --pag) {
-          free_frame(fr[pag-PAG_LOG_INIT_DATA]);
+        for (pag = pag - 1; pag >= 0; --pag) {
+          free_frame(fr[pag]);
         }
         return -ENOMEM;
      }
 // es comparteixen les pagines del fill amb les del pare
-     set_ss_pag(fillPT, pag, fr[pag-PAG_LOG_INIT_DATA]); 
-     set_ss_pag(parePT, pag + NUM_PAG_DATA, fr[pag-PAG_LOG_INIT_DATA]);
+     set_ss_pag(fillPT, pag+PAG_LOG_INIT_DATA, fr[pag]); 
+     set_ss_pag(parePT, pag + NUM_PAG_DATA + PAG_LOG_INIT_DATA, fr[pag]);
   }
 //copiem les dades de les pagines
   copy_data(PAG_LOG_INIT_DATA*PAGE_SIZE,(PAG_LOG_INIT_DATA+NUM_PAG_DATA)*PAGE_SIZE, NUM_PAG_DATA*PAGE_SIZE);
