@@ -110,8 +110,6 @@ void init_sched(){
 }
 
 void init_fq() {
-//orden 0->1->2->3->....->n-freequeue (la cola cuelga de freequeue->prev)
-//EL PREV DE FREEQUEUE APUNTA A N, FREEQUEUE NEXT APUNTA A SI MISMO
 	INIT_LIST_HEAD(&freequeue);
 	list_add(&task[0].task.list, &freequeue);
 	int i;
@@ -189,6 +187,16 @@ void sched_next_rr() {
   
 }
 
+void schedule () {
+  update_sched_data_rr();
+  if (needs_sched_rr()) {
+    update_process_state_rr(current(), &readyqueue);
+    update_stats_c();
+    current()->estat = ST_READY;
+    sched_next_rr();
+  }
+}
+
 int get_quantum (struct task_struct *t) {
   return t->quantum;
 }
@@ -205,7 +213,6 @@ void init_stats(struct task_struct *t) {
   t->stat.total_trans = 0;
   t->stat.remaining_ticks = t->quantum;
 }
-
 void update_stats_a() {
   int current_ticks = get_ticks();
   current()->stat.user_ticks += current_ticks - current()->stat.elapsed_total_ticks;
@@ -231,15 +238,7 @@ void update_stats_d(struct task_struct *t) {
   t->stat.total_trans++;
 }
 
-void schedule () {
-  update_sched_data_rr();
-  if (needs_sched_rr()) {
-    update_process_state_rr(current(), &readyqueue);
-    update_stats_c();
-    current()->estat = ST_READY;
-    sched_next_rr();
-  }
-}
+
 
 
 

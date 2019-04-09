@@ -53,7 +53,6 @@ int sys_getpid()
 }
 
 int ret_from_fork() {
-  //update_stats_a();
   update_stats_b();
   return 0;
 }
