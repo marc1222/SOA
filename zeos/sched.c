@@ -6,6 +6,7 @@
 #include <mm.h>
 #include <io.h>
 #include <utils.h>
+#include <schedperf.h>
 
 
 
@@ -107,6 +108,7 @@ list_del(init_lh);
 void init_sched(){
 	init_fq();
 	init_rdyq();
+	init_sched_policy();
 }
 
 void init_fq() {
@@ -188,12 +190,12 @@ void sched_next_rr() {
 }
 
 void schedule () {
-  update_sched_data_rr();
-  if (needs_sched_rr()) {
-    update_process_state_rr(current(), &readyqueue);
+  update_sched_data();
+  if (needs_sched()) {
+    update_process_state(current(), &readyqueue);
     update_stats_c();
     current()->estat = ST_READY;
-    sched_next_rr();
+    sched_next();
   }
 }
 
@@ -237,9 +239,34 @@ void update_stats_d(struct task_struct *t) {
   t->stat.elapsed_total_ticks = current_ticks;
   t->stat.total_trans++;
 }
+struct stats * get_task_stats(struct task_struct *t) 
+{
+	return &(t->stat);
+}
+struct list_head * get_task_list(struct task_struct *t)
+{
+	return &(t->list);
+}
 
-
-
+void block_process(struct list_head *block_queue) {
+	struct task_struct *t = current();
+	struct stats *st = get_task_stats(t);
+	update_process_state(t, block_queue);
+	st->system_ticks = get_ticks()-st->elapsed_total_ticks;
+	st->elapsed_total_ticks = get_ticks();
+	sched_next();
+}
+void unblock_process(struct task_struct *blocked){
+	struct stats *st = get_task_stats(blocked);
+	struct list_head *l = get_task_list(blocked);
+	update_process_state(blocked, &readyqueue);
+	st->blocked_ticks += (get_ticks()-st->elapsed_total_ticks);
+	st->elapsed_total_ticks = get_ticks();
+	if (needs_sched()) {
+		update_process_state(current(), &readyqueue);
+		sched_next();
+	}
+}
 
 
 

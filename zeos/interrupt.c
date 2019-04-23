@@ -9,6 +9,10 @@
 #include <system.h>
 #include <zeos_interrupt.h>
 #include <libc.h>
+#include <schedperf.h>
+
+
+void system_call_handler();
 
 Gate idt[IDT_ENTRIES];
 Register    idtR;
@@ -85,7 +89,7 @@ void setIdt()
 /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
   setInterruptHandler(33, keyboard_handler, 0);
   setInterruptHandler(32, clock_handler, 0);
-
+  setTrapHandler(0x80, system_call_handler, 3);
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
 
   set_idt_reg(&idtR);
@@ -104,19 +108,14 @@ void keyboard_routine() {
 		char aux = char_map[ch & 0x7F];
 		if(aux != '\0') printc_xy(0, 0, aux);		
 		else printc_xy(0,0,'C');
-		if (aux == 's') {
-			for (int i = 0; i < NR_TASKS; ++i) {
-				int ret = task[i].task.PID;
-				char buff[2];
-				itoa(ret,buff);
-				printk(buff);
-				printk(".......");
-			}
+		int ret;
+		if (aux == 'r') {
+			//ret = set_sched_policy(0);
 		}
-		//if (aux == '0') task_switch(&task[0]);
-		//if (aux == '1') task_switch(&task[1]);
-		
-	
+		else if(aux == 'f') {
+			//ret = set_sched_policy(1);
+		}
+			
 	}
 	update_stats_b();
 }
@@ -127,5 +126,6 @@ void clock_routine() {
 	zeos_show_clock();
 	schedule();
 	update_stats_b();
+	zeos_update_read_console_emul();
 }
 

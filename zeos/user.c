@@ -18,14 +18,18 @@ int __attribute__ ((__section__(".text.main")))
 	//runjp();
 	//fork();
 //	write(1,"hooala",7);
-// int i = 0;
+ 	int i = 0;
 	//struct stats *st;
 	//get_stats(1,st);
 
 	while(1) {
 //	fork();
-//if (i == 100000000) {//write(1,"hooala",7);
-	
+		set_sched_policy(0);
+		if (i == 1000000) {
+			write(1,"hooala",7);
+			set_sched_policy(1);
+		}
+		
 //	unsigned long val = st->user_ticks;
 //	itoa((int)gettime(),buff);
 //	write(1,buff,strlen(buff));
@@ -35,6 +39,6 @@ int __attribute__ ((__section__(".text.main")))
 //	itoa((int)gettime(),buff);
 //	write(1,buff,strlen(buff));
 //	}
-//i++;	
+		i++;	
 	}
 }
