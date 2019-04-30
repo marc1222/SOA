@@ -109,11 +109,135 @@ void keyboard_routine() {
 		if(aux != '\0') printc_xy(0, 0, aux);		
 		else printc_xy(0,0,'C');
 		int ret;
+		struct stats aux2;
+		char buff[256];
 		if (aux == 'r') {
-			//ret = set_sched_policy(0);
+			ret = sys_set_sched_policy(0);
+			if (ret != -1) {
+				while (ret < 100000) {
+					ret++;
+				}
+				printk("---RR---");
+				ret = sys_get_stats(current()->PID,&aux2);
+				printk("PID: ");
+				itoa(current()->PID,buff);
+				printk(buff);
+				printk("...");
+				if (ret != -1) {
+					itoa(aux2.user_ticks,buff);
+					printk("user_ticks");
+					printk(buff);
+					printk("...");
+					itoa(aux2.system_ticks,buff);
+					printk("system ticks");
+					printk(buff);
+					printk("...");
+					itoa(aux2.blocked_ticks,buff);
+					printk("blocked ticks");
+					printk(buff);
+					printk("...");
+					itoa(aux2.ready_ticks,buff);
+					printk("ready ticks");
+					printk(buff);
+					printk("...");
+					itoa(aux2.elapsed_total_ticks,buff);
+					printk("elapsed total ticks");
+					printk(buff);
+					printk("...");
+					itoa(aux2.remaining_ticks,buff);
+					printk("remaining ticks");
+					printk(buff);
+					printk("...");
+					itoa(aux2.total_trans,buff);
+					printk("total trans");
+					printk(buff);
+					printk("...");
+				}
+								
+			}
 		}
 		else if(aux == 'f') {
-			//ret = set_sched_policy(1);
+			ret = sys_set_sched_policy(1);
+			if (ret != -1) {
+
+				while (ret < 100000) {
+					ret++;
+				}
+
+				ret = sys_get_stats(current()->PID,&aux2);
+				printk("---FCFS---");	
+				printk("PID: ");
+				itoa(current()->PID,buff);
+				printk(buff);
+				printk("...");
+				if (ret != -1) {
+					itoa(aux2.user_ticks,buff);
+					printk("user_ticks");
+					printk(buff);
+					printk("...");
+					itoa(aux2.system_ticks,buff);
+					printk("system ticks");
+					printk(buff);
+					printk("...");
+					itoa(aux2.blocked_ticks,buff);
+					printk("blocked ticks");
+					printk(buff);
+					printk("...");
+					itoa(aux2.ready_ticks,buff);
+					printk("ready ticks");
+					printk(buff);
+					printk("...");
+					itoa(aux2.elapsed_total_ticks,buff);
+					printk("elapsed total ticks");
+					printk(buff);
+					printk("...");
+					itoa(aux2.remaining_ticks,buff);
+					printk("remaining ticks");
+					printk(buff);
+					printk("...");
+					itoa(aux2.total_trans,buff);
+					printk("total trans");
+					printk(buff);
+					printk("...");
+				}
+			}		
+		}
+		else if (aux == 'p') {
+			ret = sys_get_stats(current()->PID,aux2);
+			printk("PID: ");
+			itoa(current()->PID,buff);
+			printk(buff);
+			printk("...");
+			if (ret != -1) {
+				itoa(aux2.user_ticks,buff);
+				printk("user_ticks");
+				printk(buff);
+				printk("...");
+				itoa(aux2.system_ticks,buff);
+				printk("system ticks");
+				printk(buff);
+				printk("...");
+				itoa(aux2.blocked_ticks,buff);
+				printk("blocked ticks");
+				printk(buff);
+				printk("...");
+				itoa(aux2.ready_ticks,buff);
+				printk("ready ticks");
+				printk(buff);
+				printk("...");
+				itoa(aux2.elapsed_total_ticks,buff);
+				printk("elapsed total ticks");
+				printk(buff);
+				printk("...");
+				itoa(aux2.remaining_ticks,buff);
+				printk("remaining ticks");
+				printk(buff);
+				printk("...");
+				itoa(aux2.total_trans,buff);
+				printk("total trans");
+				printk(buff);
+				printk("...");
+			}
 		}
 			
 	}

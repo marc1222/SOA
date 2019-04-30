@@ -179,10 +179,6 @@ void sched_next_rr() {
     ticks_left = next->task.quantum;
     next->task.stat.remaining_ticks = ticks_left;
     update_stats_d(&next->task);
-	//int i = next->task.PID;
-	//char c;
-	//itoa(i,&c);
-	//printk(&c);
   }
   next->task.estat = ST_RUN;
   task_switch(next);

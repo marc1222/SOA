@@ -9,36 +9,18 @@ int __attribute__ ((__section__(".text.main")))
 {
     /* Next line, tries to move value 0 to CR3 register. This register is a privileged one, and so it will raise an exception */
      /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
+	//crear procesos
+	fork();
+	fork();
 
-	//char buff[20];
-	//int gettime();
-	//itoa((int)gettime(),buff);
-	//write(1,buff,strlen(buff));
-	
-	//runjp();
-	//fork();
-//	write(1,"hooala",7);
- 	int i = 0;
-	//struct stats *st;
-	//get_stats(1,st);
-
+	//set policy
+	set_sched_policy(0);  //RR
+	//set_sched_policy(1); //FCFS
+	int a=0,b=0,c=0;
 	while(1) {
-//	fork();
-		set_sched_policy(0);
-		if (i == 1000000) {
-			write(1,"hooala",7);
-			set_sched_policy(1);
-		}
-		
-//	unsigned long val = st->user_ticks;
-//	itoa((int)gettime(),buff);
-//	write(1,buff,strlen(buff));
-//	st->user_ticks = 2;
-//	get_stats(1,st);
-//	val = st->user_ticks;
-//	itoa((int)gettime(),buff);
-//	write(1,buff,strlen(buff));
-//	}
-		i++;	
+		//begin JP
+		a += 3;
+		b++;
+		c = c+1;
 	}
 }
