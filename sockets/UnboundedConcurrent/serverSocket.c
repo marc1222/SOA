@@ -31,6 +31,14 @@ int socket_fd = (int) fd;
 
 }
 
+doServiceFork(int fd){
+	int n;
+	if(fork() == 0) {
+		doService(fd);
+		return 0;
+	}
+}
+
 
 main (int argc, char *argv[])
 {
@@ -64,8 +72,7 @@ main (int argc, char *argv[])
 		  deleteSocket(socketFD);
 		  exit (1);
 	  }
-
-	  doService(connectionFD);
+	  doServiceFork(connectionFD);
   }
 
 }
