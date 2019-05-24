@@ -1,8 +1,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+ #include <signal.h>
 
-
+int msgs = 0;
+char buff_res[256];
+display_stats(int signal) {
+	sprintf(buff_res, "%d msgs/s\n", msgs);
+	write(1, buff_res,strlen(buff_res));
+	msgs = 0;
+	alarm(1);
+}
 doService(int fd) {
 int i = 0;
 char buff[80];
@@ -13,8 +21,9 @@ int socket_fd = (int) fd;
 	ret = read(socket_fd, buff, sizeof(buff));
 	while(ret > 0) {
 		buff[ret]='\0';
-		sprintf(buff2, "Server [%d] received: %s\n", getpid(), buff);
-		write(1, buff2, strlen(buff2));
+		//sprintf(buff2, "Server [%d] received: %s\n", getpid(), buff);
+		//write(1, buff2, strlen(buff2));
+		msgs += strlen(buff);
 		ret = write(fd, "caracola ", 8);
 		if (ret < 0) {
 			perror ("Error writing to socket");
@@ -26,8 +35,8 @@ int socket_fd = (int) fd;
 			perror ("Error reading from socket");
 
 	}
-	sprintf(buff2, "Server [%d] ends service\n", getpid());
-	write(1, buff2, strlen(buff2));
+	//sprintf(buff2, "Server [%d] ends service\n", getpid());
+	//write(1, buff2, strlen(buff2));
 
 }
 
@@ -49,7 +58,7 @@ main (int argc, char *argv[])
   int ret;
   int port;
 
-
+	
   if (argc != 2)
     {
       strcpy (buffer, "Usage: ServerSocket PortNumber\n");
@@ -64,16 +73,17 @@ main (int argc, char *argv[])
       perror ("Error creating socket\n");
       exit (1);
     }
-
+	signal(SIGALRM, display_stats);
+	alarm(1);
   while (1) {
 	  connectionFD = acceptNewConnections (socketFD);
 	  if (connectionFD < 0)
 	  {
 		  perror ("Error establishing connection \n");
 		  deleteSocket(socketFD);
-		  exit (1);
+		  exit(1);
 	  }
-
+	
 	  doService(connectionFD);
   }
 
