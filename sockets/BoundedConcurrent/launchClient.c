@@ -76,7 +76,7 @@ struct timeval res_t;
 timersub(&end_t, &init_t, &res_t);
 msec_elapsed = (res_t.tv_sec*1000)+(res_t.tv_usec/1000);
 sprintf(buf, "Time %d msec\n",msec_elapsed);
-write(fd,buf,strlen(buf));
+write(1,buf,strlen(buf));
 close(fd);
 
 }

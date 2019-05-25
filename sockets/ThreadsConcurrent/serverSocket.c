@@ -5,6 +5,7 @@
 #include <pthread.h>
 
 int *work_threads;
+pthread_t threads[150];
 
 struct thread_arg{
 	int thread_id;
@@ -38,6 +39,7 @@ void *doService(void *arguments) {
 	//sprintf(buff2, "Server [%d] ends service\n", getpid());
 	//write(1, buff2, strlen(buff2));
 	work_threads[args->thread_id] = 0;
+	pthread_cancel(threads[args->thread_id]);
 }
 
 int findEmptyThread(Max) {
@@ -72,9 +74,8 @@ main (int argc, char *argv[])
 	}
 
 	port = atoi(argv[1]);
-	MaxConnections = atoi(argv[2]);
-	
-	pthread_t threads[MaxConnections];
+	//MaxConnections = atoi(argv[2]);
+	MaxConnections = 150;
 	work_threads = malloc(sizeof(int) * MaxConnections);
 	for (int i = 0; i < MaxConnections; ++i) {
 		work_threads[i] = 0;

@@ -1,28 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-       #include <fcntl.h>
 
-//int msgs[250] = {0};
-char buff_res[256];
-int pfd[2];
-display_stats(int signal) {
-
-	int total = 0;
-	char buffaux[20];
-	int readB;
-	fcntl(pfd[0], F_SETFL, O_NONBLOCK);
-	while((readB = read(pfd[0], buffaux, sizeof(int))) > 0) {
-		total += atoi(buffaux);
-		sprintf(buffaux, "%d", total);
-		write(1, buffaux, strlen(buffaux));
-	}
-	sprintf(buff_res, "%d\n", total);
-	write(1, buff_res,strlen(buff_res));
-	alarm(1);
-}
 
 doService(int fd) {
 int i = 0;
@@ -36,7 +15,6 @@ int socket_fd = (int) fd;
 		buff[ret]='\0';
 		//sprintf(buff2, "Server [%d] received: %s\n", getpid(), buff);
 		//write(1, buff2, strlen(buff2));
-		write(pfd[1], itoa(strlen(buff)), sizeof(int));
 		ret = write(fd, "caracola ", 8);
 		if (ret < 0) {
 			perror ("Error writing to socket");
@@ -48,15 +26,14 @@ int socket_fd = (int) fd;
 			perror ("Error reading from socket");
 
 	}
-	//sprintf(buff2, "Server [%d] ends service\n", getpid());
-	//write(1, buff2, strlen(buff2));
+	sprintf(buff2, "Server [%d] ends service\n", getpid());
+	write(1, buff2, strlen(buff2));
 
 }
 
 doServiceFork(int fd){
 	int n;
 	if(fork() == 0) {
-		signal(SIGALRM, SIG_DFL);
 		doService(fd);
 		return 0;
 	}
@@ -86,9 +63,7 @@ main (int argc, char *argv[])
       perror ("Error creating socket\n");
       exit (1);
     }
-	signal(SIGALRM, display_stats);
-	alarm(1);
-	pipe(pfd);
+	int proc = 0;
   while (1) {
 	  connectionFD = acceptNewConnections (socketFD);
 	  if (connectionFD < 0)
@@ -97,7 +72,10 @@ main (int argc, char *argv[])
 		  deleteSocket(socketFD);
 		  exit (1);
 	  }
+	  proc++;
 	  doServiceFork(connectionFD);
+	  sprintf(buffer, "Server has created [%d] processes\n", proc);
+	  write(1, buffer, strlen(buffer));
   }
 
 }

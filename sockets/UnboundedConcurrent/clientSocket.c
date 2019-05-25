@@ -53,8 +53,8 @@ main (int argc, char *argv[])
 	  }
 
 	  buff[ret] = '\0';
-	  sprintf (buff2, "Client [%d] received: %s\n",getpid(), buff);
-	  write(1,buff2,strlen(buff2)); 
+	  //sprintf (buff2, "Client [%d] received: %s\n",getpid(), buff);
+	  //write(1,buff2,strlen(buff2)); 
 
   }
 
